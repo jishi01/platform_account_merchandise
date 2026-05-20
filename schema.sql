@@ -1,0 +1,23 @@
+CREATE DATABASE IF NOT EXISTS platform_db;
+USE platform_db;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    rrole VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS platforms (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    seller_id INT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    details TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    acc_email VARCHAR(100) NOT NULL,
+    acc_password VARCHAR(100) NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    FOREIGN KEY(seller_id) REFERENCES users(id) ON DELETE CASCADE
+);
