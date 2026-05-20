@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Market - Gaming Hub</title>
+    <style>
+        :root { --primary: #7289da; --dark: #2c2f33; --light: #ffffff; --accent: #43b581; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #23272a; color: var(--light); margin: 0; }
+        nav { background: var(--dark); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .container { padding: 2rem; max-width: 1200px; margin: auto; }
+        
+        /* Seller Form GUI */
+        .sell-box { background: var(--dark); padding: 20px; border-radius: 12px; margin-bottom: 3rem; border: 1px solid #444; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select, textarea { background: #40444b; border: none; padding: 12px; color: white; border-radius: 5px; }
+        button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #5b6eae; }
+
+        /* Shop Grid GUI */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: var(--dark); border-radius: 15px; overflow: hidden; transition: transform 0.3s; border: 1px solid #444; }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); }
+        .card-img { width: 100%; height: 180px; object-fit: cover; background: #1e2124; }
+        .card-content { padding: 15px; }
+        .price-tag { font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+        .category-badge { background: rgba(114, 137, 218, 0.2); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2>Marketplace</h2>
+    <div>
+        <span>Welcome, {{ session['username'] }}</span>
+        <a href="/logout" style="color: #ff4757; margin-left: 15px; text-decoration: none;">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <section class="sell-box">
+    <h3>🚀 Post New Account for Sale</h3>
+    <form action="/sell" method="POST" enctype="multipart/form-data" class="form-grid">
+        <input type="text" name="title" placeholder="Title (e.g. Stacked MLBB Account)" required>
+        <select name="category" required>
+            <option value="Mobile Legends">Mobile Legends</option>
+            <option value="Call of Duty Mobile">Call of Duty Mobile</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Facebook">Facebook</option>
+        </select>
+        <input type="number" name="price" placeholder="Price (₱)" required>
+        <input type="email" name="email" placeholder="Login Email" required>
+        <input type="password" name="password" placeholder="Login Password">
+        <input type="file" name="image" accept="image/*">
+        <textarea name="details" placeholder="Account details, skins, levels..." style="grid-column: span 1;"></textarea>
+        <button type="submit">Submit Selling Request</button>
+    </form>
+</section>
+
+
+    <h2 style="border-left: 5px solid var(--primary); padding-left: 15px;">Available Platforms</h2>
+    <div class="market-grid">
+        {% for item in items %}
+        <div class="card">
+            {% if item.image_url %}
+                <img src="{{ url_for('static', filename='uploads/' + item.image_url) }}" class="card-img">
+            {% else %}
+                <div class="card-img" style="display:flex; align-items:center; justify-content:center; color:#666;">No Image Provided</div>
+            {% endif %}
+            <div class="card-content">
+                <span class="category-badge">{{ item.category }}</span>
+                <h3>{{ item.title }}</h3>
+                <p style="color: #b9bbbe; font-size: 0.9rem;">{{ item.details }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                    <span class="price-tag">₱{{ item.price }}</span>
+                    <button onclick="confirmPurchase('{{ item.id }}', '{{ item.title }}')" style="background: var(--accent);">Buy Now</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function confirmPurchase(id, title) {
+        if (confirm("Confirm purchase of: " + title + "?\nThis will process your payment immediately.")) {
+            window.location.href = "/buy/" + id;
+        }
+    }
+</script>
+</body>
+</html>

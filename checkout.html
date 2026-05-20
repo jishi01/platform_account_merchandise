@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCash Payment – {{ item.title }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gcash-blue: #007DC5;
+    --gcash-dark: #003F7F;
+    --gcash-sky:  #E8F4FD;
+    --gcash-green:#00B96B;
+    --surface:    #F7F9FC;
+    --card:       #FFFFFF;
+    --border:     #DDE3EC;
+    --text:       #111827;
+    --muted:      #6B7280;
+    --danger:     #DC2626;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+    color: var(--text);
+  }
+
+  /* ── Header bar ── */
+  .topbar {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .topbar a {
+    color: var(--gcash-blue);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .topbar a:hover { text-decoration: underline; }
+
+  /* ── Progress stepper ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 32px;
+    width: 100%;
+    max-width: 520px;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+  .step-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+    background: var(--border); color: var(--muted);
+    transition: all .25s;
+  }
+  .step.active .step-circle  { background: var(--gcash-blue); color: #fff; }
+  .step.done .step-circle    { background: var(--gcash-green); color: #fff; }
+  .step-label { font-size: 11px; color: var(--muted); font-weight: 500; text-align: center; }
+  .step.active .step-label   { color: var(--gcash-blue); }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin-bottom: 20px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,.06);
+    margin-bottom: 16px;
+  }
+
+  /* ── Item summary ── */
+  .item-header {
+    background: linear-gradient(135deg, var(--gcash-dark), var(--gcash-blue));
+    padding: 24px;
+    color: #fff;
+  }
+  .item-header .label { font-size: 11px; opacity: .75; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .item-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .item-header .category { font-size: 13px; opacity: .8; }
+  .item-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,.2);
+  }
+  .item-price-row .currency { font-size: 18px; font-weight: 600; opacity: .9; }
+  .item-price-row .amount   { font-size: 36px; font-weight: 700; line-height: 1; }
+
+  /* ── Form body ── */
+  .form-body { padding: 28px 24px; }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .gcash-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gcash-sky);
+    border: 1px solid #B3D9F5;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+  }
+  .gcash-icon {
+    width: 40px; height: 40px;
+    background: var(--gcash-blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .gcash-logo p  { font-size: 14px; font-weight: 600; color: var(--gcash-dark); }
+  .gcash-logo span { font-size: 12px; color: var(--muted); }
+
+  /* ── Fields ── */
+  .field { margin-bottom: 20px; }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  label .required { color: var(--danger); margin-left: 2px; }
+  label .hint     { font-weight: 400; color: var(--muted); font-size: 12px; margin-left: 6px; }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    border-color: var(--gcash-blue);
+    box-shadow: 0 0 0 3px rgba(0,125,197,.12);
+  }
+  input.phone {
+    font-family: 'DM Mono', monospace;
+    letter-spacing: .05em;
+  }
+  .input-prefix {
+    position: relative;
+  }
+  .input-prefix .prefix {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .input-prefix input { padding-left: 36px; }
+
+  .amount-row {
+    display: flex;
+    gap: 10px;
+  }
+  .amount-row .input-prefix { flex: 1; }
+
+  /* quick-fill chips */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .chip {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--gcash-blue);
+    background: transparent;
+    color: var(--gcash-blue);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .chip:hover { background: var(--gcash-blue); color: #fff; }
+
+  /* ── Total summary box ── */
+  .summary-box {
+    background: var(--gcash-sky);
+    border: 1px solid #B3D9F5;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    padding: 4px 0;
+  }
+  .summary-row .key   { color: var(--muted); }
+  .summary-row .val   { font-weight: 600; }
+  .summary-row.total  { border-top: 1px solid #B3D9F5; margin-top: 8px; padding-top: 10px; }
+  .summary-row.total .key { font-weight: 700; color: var(--text); }
+  .summary-row.total .val { font-size: 18px; color: var(--gcash-blue); }
+
+  /* ── Submit ── */
+  .btn-pay {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--gcash-blue), var(--gcash-dark));
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: opacity .2s, transform .1s;
+    box-shadow: 0 4px 14px rgba(0,63,127,.3);
+  }
+  .btn-pay:hover  { opacity: .92; }
+  .btn-pay:active { transform: scale(.98); }
+
+  .secure-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">&#8592; Back to listings</a>
+</div>
+
+<!-- Stepper -->
+<div class="steps">
+  <div class="step done">
+    <div class="step-circle">✓</div>
+    <div class="step-label">Select Item</div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step active">
+    <div class="step-circle">2</div>
+    <div class="step-label">Pay via GCash</div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step">
+    <div class="step-circle">3</div>
+    <div class="step-label">Receipt</div>
+  </div>
+</div>
+
+<!-- Item summary card -->
+<div class="card">
+  <div class="item-header">
+    <div class="label">You are buying</div>
+    <h2>{{ item.title }}</h2>
+    <div class="category">{{ item.category }}</div>
+    <div class="item-price-row">
+      <span class="currency">₱</span>
+      <span class="amount">{{ "%.2f"|format(item.price) }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Payment form card -->
+<div class="card">
+  <div class="form-body">
+    <div class="gcash-logo">
+      <div class="gcash-icon">G</div>
+      <div>
+        <p>Pay with GCash</p>
+        <span>Enter your GCash details below</span>
+      </div>
+    </div>
+
+    <form action="/buy/{{ item.id }}" method="POST" id="payForm">
+
+      <div class="section-title">Your GCash Information</div>
+
+      <div class="field">
+        <label>GCash Mobile Number <span class="required">*</span></label>
+        <div class="input-prefix">
+          <span class="prefix">+63</span>
+          <input type="text" name="gcash_number" class="phone"
+                 placeholder="9XX XXX XXXX"
+                 maxlength="11"
+                 pattern="09[0-9]{9}"
+                 title="Enter a valid 11-digit GCash number starting with 09"
+                 required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>
+          Payment Amount <span class="required">*</span>
+          <span class="hint">(must be ≥ ₱{{ "%.2f"|format(item.price) }})</span>
+        </label>
+        <div class="input-prefix">
+          <span class="prefix">₱</span>
+          <input type="number" name="gcash_amount" id="amtInput"
+                 placeholder="{{ "%.2f"|format(item.price) }}"
+                 min="{{ item.price }}"
+                 step="0.01"
+                 value="{{ "%.2f"|format(item.price) }}"
+                 required>
+        </div>
+        <div class="chips">
+          <button type="button" class="chip" onclick="setAmount({{ item.price }})">Exact ₱{{ "%.2f"|format(item.price) }}</button>
+          <button type="button" class="chip" onclick="setAmount({{ (item.price + 50)|int }})">₱{{ (item.price + 50)|int }}</button>
+          <button type="button" class="chip" onclick="setAmount({{ (item.price + 100)|int }})">₱{{ (item.price + 100)|int }}</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>GCash Reference No. <span class="hint">(optional — leave blank to auto-generate)</span></label>
+        <input type="text" name="gcash_ref"
+               placeholder="e.g. 1234567890123"
+               maxlength="30">
+      </div>
+
+      <div class="section-title">Order Summary</div>
+
+      <div class="summary-box">
+        <div class="summary-row">
+          <span class="key">Item</span>
+          <span class="val">{{ item.title }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="key">Category</span>
+          <span class="val">{{ item.category }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="key">Listed Price</span>
+          <span class="val">₱{{ "%.2f"|format(item.price) }}</span>
+        </div>
+        <div class="summary-row total">
+          <span class="key">Total Due</span>
+          <span class="val" id="totalDisplay">₱{{ "%.2f"|format(item.price) }}</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-pay">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <path d="M2 10h20"/>
+        </svg>
+        Confirm & Pay ₱<span id="btnAmount">{{ "%.2f"|format(item.price) }}</span>
+      </button>
+
+      <p class="secure-note">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Secured transaction · Your details are protected
+      </p>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  function setAmount(val) {
+    document.getElementById('amtInput').value = val.toFixed(2);
+    updateDisplay(val);
+  }
+
+  function updateDisplay(val) {
+    document.getElementById('totalDisplay').textContent = '₱' + parseFloat(val).toFixed(2);
+    document.getElementById('btnAmount').textContent    = parseFloat(val).toFixed(2);
+  }
+
+  document.getElementById('amtInput').addEventListener('input', function() {
+    updateDisplay(this.value || 0);
+  });
+
+  // Phone number formatting — auto-prefix 0 if starts with 9
+  document.querySelector('input[name="gcash_number"]').addEventListener('blur', function() {
+    if (this.value.startsWith('9') && this.value.length === 10) {
+      this.value = '0' + this.value;
+    }
+  });
+</script>
+</body>
+</html>

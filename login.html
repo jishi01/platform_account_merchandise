@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Account Market</title>
+    <style>
+        :root { --accent: #7289da; --bg: #23272a; --card: #2c2f33; --text: #ffffff; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; justify-content: center; align-items: center; margin: 0; }
+        .login-card { background: var(--card); padding: 40px; border-radius: 12px; width: 350px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #444; }
+        h2 { color: var(--accent); margin-bottom: 25px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #444; background: #40444b; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        button:hover { background: #5b6eae; }
+        hr { border: 0; border-top: 1px solid #444; margin: 25px 0; }
+        h3 { font-size: 1.1rem; color: #b9bbbe; }
+        p { font-size: 0.8rem; color: #72767d; }
+        .hidden { display: none; } /* Used to hide the forms */
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2 id="form-title">PLATFORM HUB</h2>
+
+        <div id="login-section">
+            <form action="/login" method="POST">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <select name="role">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit">LOGIN</button>
+            </form>
+            <hr>
+            <h3>New User?</h3>
+            <p>Register now to start selling.</p>
+            <button onclick="toggleForm()" style="background: transparent; border: 1px solid var(--accent); color: var(--accent);">GO TO REGISTER</button>
+        </div>
+
+        <div id="register-section" class="hidden">
+            <form action="/register" method="POST">
+                <input type="text" name="username" placeholder="Choose Username" required>
+                <input type="password" name="password" placeholder="Choose Password" required>
+                <button type="submit" style="background-color: #43b581;">CREATE ACCOUNT</button>
+            </form>
+            <hr>
+            <button onclick="toggleForm()" style="background: transparent; border: 1px solid #f04747; color: #f04747;">BACK TO LOGIN</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleForm() {
+            const loginSec = document.getElementById('login-section');
+            const regSec = document.getElementById('register-section');
+            const title = document.getElementById('form-title');
+
+            if (loginSec.classList.contains('hidden')) {
+                loginSec.classList.remove('hidden');
+                regSec.classList.add('hidden');
+                title.innerText = "PLATFORM HUB";
+            } else {
+                loginSec.classList.add('hidden');
+                regSec.classList.remove('hidden');
+                title.innerText = "USER REGISTRATION";
+            }
+        }
+    </script>
+</body>
+</html>

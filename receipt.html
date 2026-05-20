@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Receipt – {{ receipt.ref }}</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gcash-blue:  #007DC5;
+    --gcash-dark:  #003F7F;
+    --gcash-green: #00B96B;
+    --surface:     #F0F7FF;
+    --card:        #FFFFFF;
+    --border:      #DDE3EC;
+    --text:        #111827;
+    --muted:       #6B7280;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 60px;
+    color: var(--text);
+  }
+
+  /* ── Stepper (completed) ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 32px;
+  }
+  .step { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+  .step-circle {
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:13px;
+    background: var(--gcash-green); color:#fff;
+  }
+  .step-label { font-size:11px; color: var(--gcash-green); font-weight:600; text-align:center; }
+  .step-line   { flex:1; height:2px; background: var(--gcash-green); margin-bottom:20px; }
+
+  /* ── Receipt card ── */
+  .receipt-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,63,127,.10);
+  }
+
+  /* Success header */
+  .receipt-header {
+    background: linear-gradient(135deg, var(--gcash-green), #009a58);
+    padding: 32px 24px 28px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+  }
+  .check-circle {
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    animation: pop .4s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes pop {
+    from { transform: scale(0); opacity:0; }
+    to   { transform: scale(1); opacity:1; }
+  }
+  .receipt-header h2  { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .receipt-header p   { font-size: 14px; opacity: .85; }
+
+  /* Ref badge */
+  .ref-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-top: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: .06em;
+  }
+
+  /* Jagged cut separator */
+  .jagged {
+    height: 20px;
+    background:
+      radial-gradient(circle at 10px -1px, var(--surface) 12px, transparent 13px),
+      linear-gradient(var(--card), var(--card));
+    background-size: 20px 20px, 100% 100%;
+    background-repeat: repeat-x, no-repeat;
+  }
+
+  /* Receipt body */
+  .receipt-body { padding: 24px 24px 28px; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+    gap: 12px;
+  }
+  .row:last-of-type { border-bottom: none; }
+  .row .key   { color: var(--muted); flex-shrink: 0; }
+  .row .val   { font-weight: 600; text-align: right; word-break: break-all; }
+  .row .mono  { font-family: 'DM Mono', monospace; font-size: 13px; }
+  .row.highlight .val { color: var(--gcash-blue); font-size: 20px; }
+
+  /* Total block */
+  .total-block {
+    background: linear-gradient(135deg, var(--gcash-dark), var(--gcash-blue));
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+  }
+  .total-block .label-col p { font-size: 12px; opacity: .75; margin-bottom: 2px; }
+  .total-block .label-col h3 { font-size: 15px; font-weight: 700; }
+  .total-block .amount { font-size: 28px; font-weight: 800; }
+  .total-block .currency { font-size: 16px; vertical-align: top; margin-top: 6px; display: inline-block; opacity: .85; }
+
+  /* Purchased account details box */
+  .account-box {
+    background: #FFFBEB;
+    border: 1px solid #FCD34D;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .account-box .warn-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #92400E;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Action buttons */
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity .2s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn-primary { background: var(--gcash-blue); color: #fff; }
+  .btn-outline { background: #fff; color: var(--gcash-dark); border: 1.5px solid var(--border); }
+
+  /* Timestamp footer */
+  .receipt-footer {
+    text-align: center;
+    padding: 14px 24px 20px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .actions, .steps { display: none; }
+    .receipt-card { box-shadow: none; border: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- All steps done -->
+<div class="steps">
+  <div class="step">
+    <div class="step-circle">✓</div>
+    <div class="step-label">Select Item</div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step">
+    <div class="step-circle">✓</div>
+    <div class="step-label">Pay via GCash</div>
+  </div>
+  <div class="step-line"></div>
+  <div class="step">
+    <div class="step-circle">✓</div>
+    <div class="step-label">Receipt</div>
+  </div>
+</div>
+
+<div class="receipt-card">
+
+  <!-- Success header -->
+  <div class="receipt-header">
+    <div class="check-circle">✓</div>
+    <h2>Payment Successful!</h2>
+    <p>Your GCash payment has been confirmed</p>
+    <div class="ref-badge">
+      <span>REF:</span>
+      <strong>{{ receipt.ref }}</strong>
+    </div>
+  </div>
+
+  <div class="jagged"></div>
+
+  <div class="receipt-body">
+
+    <!-- Total amount block -->
+    <div class="total-block">
+      <div class="label-col">
+        <p>Amount Paid</p>
+        <h3>via GCash</h3>
+      </div>
+      <div class="amount">
+        <span class="currency">₱</span>{{ "%.2f"|format(receipt.gcash_amount) }}
+      </div>
+    </div>
+
+    <!-- Transaction details -->
+    <div class="section-label">Transaction Details</div>
+
+    <div class="row">
+      <span class="key">Date & Time</span>
+      <span class="val">{{ receipt.paid_at }}</span>
+    </div>
+    <div class="row">
+      <span class="key">Reference No.</span>
+      <span class="val mono">{{ receipt.ref }}</span>
+    </div>
+    <div class="row">
+      <span class="key">GCash Number</span>
+      <span class="val mono">{{ receipt.gcash_number }}</span>
+    </div>
+    <div class="row">
+      <span class="key">Buyer</span>
+      <span class="val">{{ receipt.buyer }}</span>
+    </div>
+
+    <!-- Item details -->
+    <div class="section-label" style="margin-top:20px;">Item Details</div>
+
+    <div class="row">
+      <span class="key">Title</span>
+      <span class="val">{{ receipt.item.title }}</span>
+    </div>
+    <div class="row">
+      <span class="key">Category</span>
+      <span class="val">{{ receipt.item.category }}</span>
+    </div>
+    <div class="row">
+      <span class="key">Listed Price</span>
+      <span class="val">₱{{ "%.2f"|format(receipt.item.price) }}</span>
+    </div>
+    {% if receipt.item.details %}
+    <div class="row">
+      <span class="key">Details</span>
+      <span class="val">{{ receipt.item.details }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Account credentials (unlocked after purchase) -->
+    <div class="section-label" style="margin-top:20px;">Account Credentials</div>
+    <div class="account-box">
+      <div class="warn-label">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        </svg>
+        Save these credentials — shown only once
+      </div>
+      <div class="row">
+        <span class="key">Email</span>
+        <span class="val mono">{{ receipt.item.acc_email }}</span>
+      </div>
+      <div class="row">
+        <span class="key">Password</span>
+        <span class="val mono">{{ receipt.item.acc_password }}</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn-primary" onclick="window.print()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Print Receipt
+      </button>
+      <a href="/" class="btn btn-outline">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10"/>
+        </svg>
+        Back to Home
+      </a>
+    </div>
+
+  </div>
+
+  <div class="receipt-footer">
+    Transaction processed on {{ receipt.paid_at }} &nbsp;·&nbsp; Thank you for your purchase!
+  </div>
+
+</div>
+
+</body>
+</html>
