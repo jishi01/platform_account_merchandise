@@ -96,22 +96,6 @@ Tracks comprehensive transaction properties, visibility flags, and structural me
 
 ---
 
-## 📁 Project Structure
-```text
-platform_account_merchandise/
-├── app.py                 # Core application configuration, endpoint mapping, and control logic
-├── static/                # Client-accessible static directory tree
-│   ├── css/               # Application structure presentation styling rules
-│   └── uploads/           # Persistent repository housing merchandise uploaded imagery
-├── templates/             # Jinja2 presentation layouts executed on the server
-│   ├── index.html         # Main dashboard displaying authenticated store listings
-│   ├── admin.html         # Moderation workflow window displaying pending data fields
-│   ├── login.html         # Verification view handling application profile matching
-│   ├── checkout.html      # Secure checkout portal checking phone and pricing models
-│   └── receipt.html       # Automated checkout statement delivering account credentials
-├── market.service         # systemd automation control layer setup script
-└── README.md              # System architecture setup instructions and guide
----
 ## 👥 Project Team
 
 * **Cruzada, Maxine M.** – Systems Developer
@@ -129,3 +113,22 @@ platform_account_merchandise/
 This full-stack system layout and documentation files are developed and maintained strictly for academic evaluation metrics under the oversight of **Batangas State University**.
 
 > *Platform Account Merchandise — Safe, Verified, and Seamless Digital Asset Trading.*
+
+---
+ 
+## 📁 Project Structure
+```text
+platform_account_merchandise/
+├── app.py                 # Core application configuration, endpoint mapping, and control logic
+├── static/                # Client-accessible static directory tree
+│   ├── css/               # Application structure presentation styling rules
+│   └── uploads/           # Persistent repository housing merchandise uploaded imagery
+├── templates/             # Jinja2 presentation layouts executed on the server
+│   ├── index.html         # Main dashboard displaying authenticated store listings
+│   ├── admin.html         # Moderation workflow window displaying pending data fields
+│   ├── login.html         # Verification view handling application profile matching
+│   ├── checkout.html      # Secure checkout portal checking phone and pricing models
+│   └── receipt.html       # Automated checkout statement delivering account credentials
+├── market.service         # systemd automation control layer setup script
+└── README.md              # System architecture setup instructions and guide
+
