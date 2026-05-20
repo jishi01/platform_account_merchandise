@@ -1,0 +1,13 @@
+[Unit]
+Description=Flask Platform Account Merchandise Service Daemon
+After=network.target mysql.service
+
+[Service]
+User=jishivm
+WorkingDirectory=/home/jishivm/platform_account_merchandise
+ExecStart=/home/jishivm/platform_account_merchandise/venv/bin/python app.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
