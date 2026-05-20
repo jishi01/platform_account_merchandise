@@ -45,16 +45,6 @@ The rapid growth of online gaming and digital services has created a high-volume
 
 ---
 
-## 🏗️ System Architecture
-
-Platform Account Merchandise implements a strict three-tier decoupled network architecture:
-
-```text
-[ Browser Client ] ──( Port 5001 / HTTP )──> [ Werkzeug WSGI Engine ] ──( Controllers )──> [ Flask App Logic ]
-                                                    │                                            │
-                                                    ▼                                            ▼
-                                        [ Static Assets / Uploads ]                    [ MySQL 8.0 Database ]
-
 ## 🗄️ Database Schema
 
 ### 1. `users` Table
