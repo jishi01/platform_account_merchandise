@@ -84,7 +84,7 @@ Tracks comprehensive transaction properties, visibility flags, and structural me
 4. Establish database schema rulesets inside MySQL by generating the custom database instance `platform_db`.
 5. Register a specialized systemd configuration wrapper (`market.service`) to handle 24/7 background availability.
 6. Enforce production network rules using **UFW firewall** configurations.
-7. Access the application runtime landing interface using: `http://<your-vm-ip>:5001/login`
+7. Access the application runtime landing interface using: `127.0.0.1:5001/login`
 
 ---
 
