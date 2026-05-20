@@ -55,57 +55,69 @@ Platform Account Merchandise implements a strict three-tier decoupled network ar
                                                     ▼                                            ▼
                                         [ Static Assets / Uploads ]                    [ MySQL 8.0 Database ]
 
+## 🗄️ Database Schema
+
+### 1. `users` Table
+Stores authentication credentials, user monikers, and access permission privileges.
+
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` **(PK)** | INT | Auto-incrementing user primary identifier key. |
+| `username` | VARCHAR(100) | Unique identification username handle. |
+| `password` | VARCHAR(100) | Account protection authentication password. |
+| `rrole` | VARCHAR(100) | Privilege configuration string (`admin`, `seller`, `buyer`). |
+
+### 2. `platforms` Table
+Tracks comprehensive transaction properties, visibility flags, and structural metadata for items.
+
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` **(PK)** | INT | Auto-incrementing primary identifier for the listing. |
+| `seller_id` **(FK)** | INT | Relational link mapping to `users(id)`. |
+| `category` | VARCHAR(100) | Structural category group *(e.g., Mobile Legends, Facebook)*. |
+| `title` | VARCHAR(100) | Human-readable header title summarizing the asset. |
+| `details` | TEXT | Open-ended text field documenting skins, ranks, or metrics. |
+| `price` | DECIMAL(10,2) | Verified cost metrics checked for mathematical structure. |
+| `acc_email` | VARCHAR(100) | Stored asset username/email (Released post-payment only). |
+| `acc_password` | VARCHAR(100) | Stored asset password credential (Released post-payment only). |
+| `image_url` | VARCHAR(255) | Absolute storage reference pointing to the file image path. |
+| `status` | VARCHAR(50) | State machine parameter (`PENDING`, `APPROVED`, `SOLD`). |
+
+---
+
 ## 🚀 Getting Started
-** Quick Deployment Summary
-**Provision an Ubuntu Server 22.04 LTS instance inside Oracle VirtualBox using NAT.
 
-**Configure core modules: install Python 3, MySQL-Server, Git, and UFW utilities.
+### Quick Deployment Summary
+1. Provision an **Ubuntu Server 22.04 LTS** instance inside Oracle VirtualBox using **Bridged Networking**.
+2. Configure core modules: install **Python 3**, **MySQL-Server**, **Git**, and **UFW** utilities.
+3. Isolate application deployment parameters utilizing an active Python virtual environment (`venv`).
+4. Establish database schema rulesets inside MySQL by generating the custom database instance `platform_db`.
+5. Register a specialized systemd configuration wrapper (`market.service`) to handle 24/7 background availability.
+6. Enforce production network rules using **UFW firewall** configurations.
+7. Access the application runtime landing interface using: `http://<your-vm-ip>:5001/login`
 
-Isolate application deployment parameters utilizing an active Python virtual environment (venv).
+---
 
-Establish database schema rulesets inside MySQL by generating the custom database instance platform_db.
+## 🔒 Security Highlights
+* **Privilege Separation:** Access controls isolate administration views from public users, preventing endpoint parameter tampering.
+* **Injection Defense Engine:** Zero string concatenation used during backend calculations; queries are isolated using explicit parameterized structures.
+* **Filename Sanitization:** Target upload storage vectors run through `secure_filename()` to combat file system directory traversal exploits.
+* **Firewall Isolation Policies:** Core external request layers are monitored by UFW configuration profiles set to block unauthorized socket queries.
 
-Register a specialized systemd configuration wrapper (market.service) to handle 24/7 background availability.
+---
 
-Enforce production network rules using UFW firewall configurations.
-
-Access the application runtime landing interface using: http://<your-vm-ip>:5001/login
-
-🔒 Security Highlights
-Privilege Separation: Access controls isolate administration views from public users, preventing endpoint parameter tampering.
-
-Injection Defense Engine: Zero string concatenation used during backend calculations; queries are isolated using explicit parameterized structures.
-
-Filename Sanitization: Target upload storage vectors run through secure_filename() to combat file system directory traversal exploits.
-
-Firewall Isolation Policies: Core external request layers are monitored by UFW configuration profiles set to block unauthorized socket queries.
+## 📁 Project Structure
+```text
 platform_account_merchandise/
-├── app.py                 # Core Flask runtime, endpoint routes, and business flow handling 
-├── static/                # Client-side assets delivered to public browsers 
-│   ├── css/               # Application styling frameworks
-│   └── uploads/           # Persistent image folder housing merchandise imagery 
-├── templates/             # Jinja2 presentation layout files
-│   ├── index.html         # Main buyer dashboard housing active listings 
-│   ├── admin.html         # Moderation interface for pending approvals 
-│   ├── login.html         # Gateway access credential validation form 
-│   ├── checkout.html      # Secure checkout portal processing transactional numbers 
-│   └── receipt.html       # Statement sheet detailing transaction credentials
-├── market.service         # Systemd service daemon unit file configuration 
-└── README.md              # Project technical guide documentation
-👥 Project Team
-Cruzada, Maxine M. – Systems Developer
-
-Hernandez, Bren M. – Systems Developer
-
-Ilagan, Jishy Ressa Mei R. – Systems Developer
-
-Sablayan, Jilian Ara B. – Systems Developer
-
-Soto, Jelaine Rose A. – Systems Developer
-
-Course Instructor: Engr. Kurt Cydrick A. Atienza
-
-📄 License
-This full-stack system layout and documentation files are developed and maintained strictly for academic evaluation metrics under the oversight of Batangas State University.
-
-Platform Account Merchandise — Safe, Verified, and Seamless Digital Asset Trading.
+├── app.py                 # Core application configuration, endpoint mapping, and control logic
+├── static/                # Client-accessible static directory tree
+│   ├── css/               # Application structure presentation styling rules
+│   └── uploads/           # Persistent repository housing merchandise uploaded imagery
+├── templates/             # Jinja2 presentation layouts executed on the server
+│   ├── index.html         # Main dashboard displaying authenticated store listings
+│   ├── admin.html         # Moderation workflow window displaying pending data fields
+│   ├── login.html         # Verification view handling application profile matching
+│   ├── checkout.html      # Secure checkout portal checking phone and pricing models
+│   └── receipt.html       # Automated checkout statement delivering account credentials
+├── market.service         # systemd automation control layer setup script
+└── README.md              # System architecture setup instructions and guide
