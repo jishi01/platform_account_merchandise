@@ -111,3 +111,21 @@ platform_account_merchandise/
 │   └── receipt.html       # Automated checkout statement delivering account credentials
 ├── market.service         # systemd automation control layer setup script
 └── README.md              # System architecture setup instructions and guide
+---
+## 👥 Project Team
+
+* **Cruzada, Maxine M.** – Systems Developer
+* **Hernandez, Bren M.** – Systems Developer
+* **Ilagan, Jishy Ressa Mei R.** – Systems Developer
+* **Sablayan, Jilian Ara B.** – Systems Developer
+* **Soto, Jelaine Rose A.** – Systems Developer
+
+**Course Instructor:** Engr. Kurt Cydrick A. Atienza
+
+---
+
+## 📄 License
+
+This full-stack system layout and documentation files are developed and maintained strictly for academic evaluation metrics under the oversight of **Batangas State University**.
+
+> *Platform Account Merchandise — Safe, Verified, and Seamless Digital Asset Trading.*
