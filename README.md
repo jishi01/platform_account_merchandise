@@ -55,11 +55,11 @@ Platform Account Merchandise implements a strict three-tier decoupled network ar
                                                     ▼                                            ▼
                                         [ Static Assets / Uploads ]                    [ MySQL 8.0 Database ]
 
-🚀 Getting Started
-Quick Deployment Summary
-Provision an Ubuntu Server 22.04 LTS instance inside Oracle VirtualBox using NAT.
+## 🚀 Getting Started
+** Quick Deployment Summary
+**Provision an Ubuntu Server 22.04 LTS instance inside Oracle VirtualBox using NAT.
 
-Configure core modules: install Python 3, MySQL-Server, Git, and UFW utilities.
+**Configure core modules: install Python 3, MySQL-Server, Git, and UFW utilities.
 
 Isolate application deployment parameters utilizing an active Python virtual environment (venv).
 
