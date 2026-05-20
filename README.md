@@ -98,11 +98,11 @@ Tracks comprehensive transaction properties, visibility flags, and structural me
 
 ## 👥 Project Team
 
-* **Cruzada, Maxine M.** – Systems Developer
-* **Hernandez, Bren M.** – Systems Developer
-* **Ilagan, Jishy Ressa Mei R.** – Systems Developer
-* **Sablayan, Jilian Ara B.** – Systems Developer
-* **Soto, Jelaine Rose A.** – Systems Developer
+* **Cruzada, Maxine M.** – System Developer
+* **Hernandez, Bren M.** – System Developer
+* **Ilagan, Jishy Ressa Mei R.** – System Developer
+* **Sablayan, Jilian Ara B.** – System Developer
+* **Soto, Jelaine Rose A.** – System Developer
 
 **Course Instructor:** Engr. Kurt Cydrick A. Atienza
 
